@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:medico/pages/home.dart';
 import 'package:medico/pages/login.dart';
+import 'package:medico/pages/signup.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Login(),
+      home: Home(),
     );
   }
 }
