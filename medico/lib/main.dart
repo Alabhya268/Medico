@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:medico/pages/appointments.dart';
+import 'package:medico/pages/bookAppointment.dart';
+import 'package:medico/pages/doctor.dart';
 import 'package:medico/pages/home.dart';
 import 'package:medico/pages/login.dart';
+import 'package:medico/pages/profile.dart';
 import 'package:medico/pages/signup.dart';
 
 void main() {

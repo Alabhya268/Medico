@@ -18,6 +18,36 @@ class _HomeState extends State<Home> {
         ),
       ),
       drawer: AppDrawer(),
+      body: GridView.count(
+        shrinkWrap: true,
+        crossAxisCount: 2,
+        childAspectRatio: 9 / 10,
+        children: [
+          for (int i = 0; i < 10; i++)
+            GestureDetector(
+              onTap: () {},
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.greenAccent,
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Container(
+                    margin: EdgeInsets.only(top: 120),
+                    child: ListTile(
+                      title: Text('Doctor Name'),
+                      subtitle: Text(
+                        'Doctor Category',
+                        overflow: TextOverflow.ellipsis,
+                        textDirection: TextDirection.ltr,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

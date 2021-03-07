@@ -13,5 +13,11 @@ class Constants {
   static TextStyle boldAppbarHeading =
       TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Colors.white);
 
+  static TextStyle boldDoctorHeading =
+      TextStyle(fontSize: 24, fontWeight: FontWeight.w600);
+
+  static TextStyle boldDoctorSubHeading =
+      TextStyle(fontSize: 18, fontWeight: FontWeight.w600);
+
   static TextStyle drawerList = TextStyle(fontSize: 16);
 }
