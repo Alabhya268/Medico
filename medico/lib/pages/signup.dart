@@ -1,9 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medico/constants.dart';
+import 'package:medico/services/firebase_services.dart';
 import 'package:medico/widgets.dart/customBtn.dart';
 
-class Signup extends StatelessWidget {
+class Signup extends StatefulWidget {
+  @override
+  _SignupState createState() => _SignupState();
+}
+
+class _SignupState extends State<Signup> {
+  FirebaseServices _firebaseServices = new FirebaseServices();
+
+  Future<void> _alertDialogBuilder(String error) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'Error',
+          ),
+          content: Container(
+            child: Text(
+              error,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                'Close',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _submitForm() async {
+    setState(() {
+      _registerFormLoading = true;
+    });
+
+    String _createAccountFeedback = await _firebaseServices.createAccount(
+        email: _registerEmail,
+        password: _registerPassword,
+        name: _name,
+        age: _age,
+        gender: _gender,
+        height: _height,
+        weight: _weight,
+        phone: _phone);
+    if (_createAccountFeedback != null) {
+      _alertDialogBuilder(_createAccountFeedback);
+    } else {
+      Navigator.pop(context);
+    }
+    setState(() {
+      _registerFormLoading = false;
+    });
+  }
+
+  String _name;
+  int _age;
+  String _gender;
+  int _height;
+  int _weight;
+  int _phone;
+  String _registerEmail;
+  String _registerPassword;
+
+  bool _registerFormLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,29 +84,47 @@ class Signup extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('SignUp to Medico', style: Constants.boldHeading),
-            Column(
-              children: [
-                TextField(
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(hintText: 'Email'),
-                ),
-                TextField(
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(hintText: 'Password'),
-                ),
-                Divider(
-                  height: 24,
-                ),
-                CustomBtn(
-                  label: 'SignUp',
-                )
-              ],
-            ),
-            CustomBtn(
-                label: 'Already have an account ?',
-                onTap: () {
-                  Navigator.pop(context);
-                }),
+            _registerFormLoading
+                ? Center(child: CircularProgressIndicator())
+                : Container(
+                    child: Column(
+                      children: [
+                        TextField(
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(hintText: 'Email'),
+                          onChanged: (value) {
+                            _registerEmail = value;
+                          },
+                        ),
+                        TextField(
+                          textInputAction: TextInputAction.next,
+                          obscureText: true,
+                          decoration: InputDecoration(hintText: 'Password'),
+                          onChanged: (value) {
+                            _registerPassword = value;
+                          },
+                        ),
+                        Divider(
+                          height: 24,
+                        ),
+                        CustomBtn(
+                          label: 'SignUp',
+                          onTap: () {
+                            _submitForm();
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+            _registerFormLoading
+                ? Text('We are creating your account')
+                : CustomBtn(
+                    label: 'Already have an account ?',
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
           ],
         ),
       ),

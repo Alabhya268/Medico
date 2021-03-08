@@ -68,6 +68,28 @@ class _ProfileState extends State<Profile> {
             ListTile(
               contentPadding: EdgeInsets.all(0),
               title: Text(
+                "Height:",
+                style: Constants.drawerList,
+              ),
+              subtitle: Text(
+                'Height in Numbers',
+                style: Constants.boldDoctorHeading,
+              ),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.all(0),
+              title: Text(
+                "Weight:",
+                style: Constants.drawerList,
+              ),
+              subtitle: Text(
+                'Weight in Numbers',
+                style: Constants.boldDoctorHeading,
+              ),
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.all(0),
+              title: Text(
                 "Email:",
                 style: Constants.drawerList,
               ),

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../constants.dart';
@@ -70,6 +71,9 @@ class _AppDrawerState extends State<AppDrawer> {
           ListTile(
             title: Text('Logout', style: Constants.drawerList),
             leading: Icon(Icons.logout),
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+            },
           ),
         ],
       ),

@@ -70,7 +70,7 @@ class _DoctorState extends State<Doctor> {
                 SizedBox(width: 12),
                 Expanded(
                     child: CustomBtn(
-                  label: 'Book Apointment',
+                  label: 'Book Appointment',
                 ))
               ],
             ),
