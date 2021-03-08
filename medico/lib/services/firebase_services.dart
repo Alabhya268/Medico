@@ -9,6 +9,8 @@ class FirebaseServices {
     return _firebaseAuth.currentUser.uid;
   }
 
+  UserModel user;
+
   final CollectionReference usersRef =
       FirebaseFirestore.instance.collection("users");
 

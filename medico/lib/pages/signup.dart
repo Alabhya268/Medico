@@ -44,16 +44,21 @@ class _SignupState extends State<Signup> {
     setState(() {
       _registerFormLoading = true;
     });
+    String _createAccountFeedback;
+    if (_registerPassword == _confirmPassword) {
+      _createAccountFeedback = await _firebaseServices.createAccount(
+          email: _registerEmail,
+          password: _registerPassword,
+          name: _name,
+          age: _age,
+          gender: _gender,
+          height: _height,
+          weight: _weight,
+          phone: _phone);
+    } else {
+      _createAccountFeedback = 'Passwords did not match';
+    }
 
-    String _createAccountFeedback = await _firebaseServices.createAccount(
-        email: _registerEmail,
-        password: _registerPassword,
-        name: _name,
-        age: _age,
-        gender: _gender,
-        height: _height,
-        weight: _weight,
-        phone: _phone);
     if (_createAccountFeedback != null) {
       _alertDialogBuilder(_createAccountFeedback);
     } else {
@@ -72,8 +77,11 @@ class _SignupState extends State<Signup> {
   int _phone;
   String _registerEmail;
   String _registerPassword;
+  String _confirmPassword;
 
   bool _registerFormLoading = false;
+  bool _isPasswordHidden = true;
+  bool _isConfirmPasswordHidden = true;
 
   @override
   Widget build(BuildContext context) {
@@ -92,19 +100,61 @@ class _SignupState extends State<Signup> {
                         TextField(
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
+                          decoration: InputDecoration(hintText: 'Fullname'),
+                          onChanged: (value) {
+                            _name = value;
+                          },
+                        ),
+                        TextField(
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
                           decoration: InputDecoration(hintText: 'Email'),
                           onChanged: (value) {
                             _registerEmail = value;
                           },
                         ),
-                        TextField(
-                          textInputAction: TextInputAction.next,
-                          obscureText: true,
-                          decoration: InputDecoration(hintText: 'Password'),
-                          onChanged: (value) {
-                            _registerPassword = value;
-                          },
-                        ),
+                        ListTile(
+                            contentPadding: EdgeInsets.all(0),
+                            title: TextField(
+                              textInputAction: TextInputAction.next,
+                              obscureText: _isPasswordHidden,
+                              decoration: InputDecoration(hintText: 'Password'),
+                              onChanged: (value) {
+                                _registerPassword = value;
+                              },
+                            ),
+                            trailing: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _isPasswordHidden = !_isPasswordHidden;
+                                });
+                              },
+                              child: _isPasswordHidden
+                                  ? Icon(Icons.lock)
+                                  : Icon(Icons.lock_open),
+                            )),
+                        ListTile(
+                            contentPadding: EdgeInsets.all(0),
+                            title: TextField(
+                              textInputAction: TextInputAction.next,
+                              obscureText: _isConfirmPasswordHidden,
+                              decoration:
+                                  InputDecoration(hintText: 'Confirm Password'),
+                              onChanged: (value) {
+                                _confirmPassword = value;
+                              },
+                            ),
+                            trailing: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _isConfirmPasswordHidden =
+                                      !_isConfirmPasswordHidden;
+                                });
+                              },
+                              child: _isConfirmPasswordHidden
+                                  ? Icon(Icons.lock)
+                                  : Icon(Icons.lock_open),
+                            )),
                         Divider(
                           height: 24,
                         ),
@@ -112,6 +162,8 @@ class _SignupState extends State<Signup> {
                           label: 'SignUp',
                           onTap: () {
                             _submitForm();
+                            print(_registerPassword);
+                            print(_confirmPassword);
                           },
                         )
                       ],

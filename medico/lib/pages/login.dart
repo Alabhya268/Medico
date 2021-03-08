@@ -57,6 +57,7 @@ class _LoginState extends State<Login> {
   }
 
   bool _registerFormLoading = false;
+  bool _isPasswordHidden = true;
 
   String _registerEmail;
   String _registerPassword;
@@ -83,14 +84,26 @@ class _LoginState extends State<Login> {
                             _registerEmail = value;
                           },
                         ),
-                        TextField(
-                          textInputAction: TextInputAction.next,
-                          obscureText: true,
-                          decoration: InputDecoration(hintText: 'Password'),
-                          onChanged: (value) {
-                            _registerPassword = value;
-                          },
-                        ),
+                        ListTile(
+                            contentPadding: EdgeInsets.all(0),
+                            title: TextField(
+                              textInputAction: TextInputAction.next,
+                              obscureText: _isPasswordHidden,
+                              decoration: InputDecoration(hintText: 'Password'),
+                              onChanged: (value) {
+                                _registerPassword = value;
+                              },
+                            ),
+                            trailing: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _isPasswordHidden = !_isPasswordHidden;
+                                });
+                              },
+                              child: _isPasswordHidden
+                                  ? Icon(Icons.lock)
+                                  : Icon(Icons.lock_open),
+                            )),
                         Divider(
                           height: 24,
                         ),

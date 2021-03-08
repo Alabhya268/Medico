@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medico/pages/appointments.dart';
+import 'package:medico/pages/home.dart';
+import 'package:medico/pages/profile.dart';
 
 import '../constants.dart';
 
@@ -12,8 +15,12 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     final drawerHeader = GestureDetector(
-      onLongPress: () {
-        print('I am awesome');
+      onTap: () {
+        Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (BuildContext context) {
+            return Profile();
+          },
+        ));
       },
       child: UserAccountsDrawerHeader(
         accountName: Text(
@@ -39,6 +46,13 @@ class _AppDrawerState extends State<AppDrawer> {
         children: [
           drawerHeader,
           ListTile(
+            onTap: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(
+                builder: (BuildContext context) {
+                  return Home();
+                },
+              ));
+            },
             title: Text(
               'Doctors',
               style: Constants.drawerList,
@@ -49,6 +63,13 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           ),
           ListTile(
+            onTap: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(
+                builder: (BuildContext context) {
+                  return Appointments();
+                },
+              ));
+            },
             title: Text(
               'My Appointments',
               style: Constants.drawerList,
@@ -73,6 +94,7 @@ class _AppDrawerState extends State<AppDrawer> {
             leading: Icon(Icons.logout),
             onTap: () {
               FirebaseAuth.instance.signOut();
+              Navigator.pop(context);
             },
           ),
         ],
