@@ -7,6 +7,10 @@ import 'package:medico/pages/login.dart';
 import 'package:medico/pages/profile.dart';
 import 'package:medico/pages/signup.dart';
 
+import 'package:medico/pages/doctors/profile.dart';
+import 'package:medico/pages/doctors/appointments.dart';
+import 'package:medico/pages/chatScreen.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -20,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Home(),
+      home: ChatScreen(),
     );
   }
 }
