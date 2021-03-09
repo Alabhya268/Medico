@@ -106,6 +106,25 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           ),
           ListTile(
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('Team Members'),
+                      content: Container(
+                          child: Text(
+                              'Alabhya Singh \nAakarshit Sharma \nAbhishek Bhist \nRannvijay Singh Rawat \nSkhand Gupta')),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('Close'))
+                      ],
+                    );
+                  });
+            },
             title: Text(
               'Team Members',
               style: Constants.drawerList,

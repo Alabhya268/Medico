@@ -194,7 +194,7 @@ class _ProfileState extends State<Profile> {
                         style: Constants.drawerList,
                       ),
                       subtitle: Text(
-                        '${user.height}',
+                        '${user.height} cm',
                         style: Constants.boldDoctorHeading,
                       ),
                     ),
@@ -205,7 +205,7 @@ class _ProfileState extends State<Profile> {
                         style: Constants.drawerList,
                       ),
                       subtitle: Text(
-                        '${user.weight}',
+                        '${user.weight} kg',
                         style: Constants.boldDoctorHeading,
                       ),
                     ),
@@ -216,7 +216,7 @@ class _ProfileState extends State<Profile> {
                         style: Constants.drawerList,
                       ),
                       subtitle: Text(
-                        't${user.email}',
+                        '${user.email}',
                         style: Constants.boldDoctorHeading,
                       ),
                     ),

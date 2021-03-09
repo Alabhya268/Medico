@@ -31,7 +31,8 @@ class _AppointmentsState extends State<Appointments> {
             }
 
             if (snapshot.connectionState == ConnectionState.done) {
-              return Padding(
+              if (snapshot.hasData) {
+                return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: ListView(
                   children: snapshot.data.docs.map((document) {
@@ -62,7 +63,11 @@ class _AppointmentsState extends State<Appointments> {
                           Expanded(
                             child: ListTile(
                               contentPadding: EdgeInsets.all(0),
-                              title: Text('${appointments.reason}', textDirection: TextDirection.ltr, overflow: TextOverflow.ellipsis,),
+                              title: Text(
+                                '${appointments.reason}',
+                                textDirection: TextDirection.ltr,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                               subtitle: Text(
                                   'time: ${appointments.time}\nData: ${appointments.date}'),
                             ),
@@ -72,8 +77,8 @@ class _AppointmentsState extends State<Appointments> {
                             onPressed: () {
                               setState(() {
                                 _firebaseServices.appointmentRef
-                                  .doc('${document.id}')
-                                  .delete();
+                                    .doc('${document.id}')
+                                    .delete();
                               });
                             },
                             color: Colors.black38,
@@ -83,13 +88,24 @@ class _AppointmentsState extends State<Appointments> {
                     );
                   }).toList(),
                 ),
-              );
+                );
+              }
+              
+              if (!snapshot.hasData) {
+               return Padding(
+                 padding: const EdgeInsets.all(12.0),
+                 child: Center(child: Text('No appointments have been booked yet'),),
+               );
+              }
+              
             }
 
             if (snapshot.hasError) {
               return Center(child: Text(snapshot.error));
             }
           }),
+
+          
     );
   }
 }
