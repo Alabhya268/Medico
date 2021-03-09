@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:medico/models/appointment.dart';
+import 'package:medico/services/firebase_services.dart';
 import 'package:medico/widgets.dart/customBtn.dart';
 import 'package:intl/intl.dart';
 
@@ -13,8 +17,14 @@ class BookAppointment extends StatefulWidget {
 }
 
 class _BookAppointmentState extends State<BookAppointment> {
-  dynamic _fromDate;
-  dynamic _fromTime;
+  FirebaseServices _firebaseServices = FirebaseServices();
+
+  String _fromDate;
+  String _fromTime;
+
+  Appointment _appointment;
+
+  String reason;
 
   int _initialTime = 10;
 
@@ -31,6 +41,27 @@ class _BookAppointmentState extends State<BookAppointment> {
     }
   }
 
+  Future _bookAppointment() {
+    _appointment = Appointment(
+      uid: _firebaseServices.getUserId(),
+      doctoruid: widget.doctorUid,
+      reason: reason,
+      time: _fromTime,
+      date: _fromDate,
+    );
+    return _firebaseServices.appointmentRef.doc().set(_appointment.toJson());
+  }
+
+  bool validateFields() {
+    bool msg = false;
+    if (_fromTime == null || _fromDate == null || reason == null) {
+      msg = false;
+    } else {
+      msg = true;
+    }
+    return msg;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,8 +69,7 @@ class _BookAppointmentState extends State<BookAppointment> {
           title: Text('Book Appointment', style: Constants.boldAppbarHeading)),
       body: Padding(
         padding: EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: ListView(
           children: [
             Column(
               children: [
@@ -76,16 +106,19 @@ class _BookAppointmentState extends State<BookAppointment> {
                 ),
                 Center(
                     child: Text(
-                  _fromTime ?? 'Select Time',
+                  'Selected time: $_fromTime '?? 'Select Time',
                   style: Constants.boldDoctorSubHeading,
                 )),
               ],
+            ),
+            SizedBox(
+              height: 72,
             ),
             Column(
               children: [
                 Center(
                     child: Text(
-                  _fromDate ?? 'Select Date',
+                  'Selected date: $_fromDate' ?? 'Select Date',
                   style: Constants.boldDoctorSubHeading,
                 )),
                 SizedBox(
@@ -99,7 +132,58 @@ class _BookAppointmentState extends State<BookAppointment> {
                 )
               ],
             ),
-            CustomBtn(label: 'Book Appointment', onTap: () {})
+            SizedBox(
+              height: 48,
+            ),
+            TextFormField(
+              textInputAction: TextInputAction.done,
+              autofocus: false,
+                  decoration:
+                      InputDecoration(hintText: 'Reason for appointment ...'),
+                  onChanged: (value) {
+                    reason = value;
+                  },
+                ),
+                SizedBox(height: 48),
+            CustomBtn(
+              label: 'Book Appointment',
+              onTap: () {
+                validateFields()
+                    ? _bookAppointment().then(
+                        (value) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Appointment booked sucessfully'),
+                              duration: Duration(seconds: 2),
+                              action: SnackBarAction(
+                                label: 'Dismiss',
+                                textColor: Colors.blue,
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
+                                },
+                              ),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
+                      )
+                    : ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('All fields are necessary'),
+                          duration: Duration(seconds: 2),
+                          action: SnackBarAction(
+                            label: 'Dismiss',
+                            textColor: Colors.blue,
+                            onPressed: () {
+                              ScaffoldMessenger.of(context)
+                                  .hideCurrentSnackBar();
+                            },
+                          ),
+                        ),
+                      );
+              },
+            )
           ],
         ),
       ),

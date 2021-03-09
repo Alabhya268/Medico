@@ -105,20 +105,20 @@ class _LoginState extends State<Login> {
                                   ? Icon(Icons.lock)
                                   : Icon(Icons.lock_open),
                             )),
-                        ListTile(
-                          contentPadding: EdgeInsets.all(0),
-                          title: Text('I am Doctor'),
-                          leading: GestureDetector(
-                            child: Checkbox(
-                              onChanged: (bool value) {
-                                setState(() {
-                                  _isDoctor = value;
-                                });
-                              },
-                              value: _isDoctor,
-                            ),
-                          ),
-                        ),
+                        // ListTile(
+                        //   contentPadding: EdgeInsets.all(0),
+                        //   title: Text('I am Doctor'),
+                        //   leading: GestureDetector(
+                        //     child: Checkbox(
+                        //       onChanged: (bool value) {
+                        //         setState(() {
+                        //           _isDoctor = value;
+                        //         });
+                        //       },
+                        //       value: _isDoctor,
+                        //     ),
+                        //   ),
+                        // ),
                         Divider(
                           height: 24,
                         ),

@@ -15,6 +15,9 @@ class FirebaseServices {
   final CollectionReference doctorRef =
       FirebaseFirestore.instance.collection("doctors");
 
+  final CollectionReference appointmentRef =
+      FirebaseFirestore.instance.collection("appointments");
+
   Future<String> createAccount({
     String name,
     int age,

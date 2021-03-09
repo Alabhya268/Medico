@@ -11,7 +11,7 @@ import '../constants.dart';
 class AppDrawer extends StatefulWidget {
   @override
   _AppDrawerState createState() => _AppDrawerState();
-} 
+}
 
 class _AppDrawerState extends State<AppDrawer> {
   FirebaseServices _firebaseServices = FirebaseServices();
@@ -26,29 +26,6 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     UserModel user;
-    final drawerHeader = GestureDetector(
-      onTap: () {
-        Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (BuildContext context) {
-            return Profile();
-          },
-        ));
-      },
-      child: UserAccountsDrawerHeader(
-        accountName: Text(
-          user.name ?? 'Name',
-          style: Constants.drawerList,
-        ),
-        accountEmail: Text(
-          user.email ??'Email',
-          style: Constants.drawerList,
-        ),
-        currentAccountPicture: CircleAvatar(
-            child: FlutterLogo(
-          size: 42,
-        )),
-      ),
-    );
 
     return Container(
       width: MediaQuery.of(context).size.width / 1.5,
@@ -56,7 +33,44 @@ class _AppDrawerState extends State<AppDrawer> {
       child: ListView(
         padding: EdgeInsets.only(),
         children: [
-          drawerHeader,
+          FutureBuilder<UserModel>(
+              future: getUser(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.connectionState == ConnectionState.done) {
+                  user = snapshot.data;
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(context, MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return Profile();
+                        },
+                      ));
+                    },
+                    child: UserAccountsDrawerHeader(
+                      accountName: Text(
+                        user.name ?? 'Name',
+                        style: Constants.drawerList,
+                      ),
+                      accountEmail: Text(
+                        user.email ?? 'Email',
+                        style: Constants.drawerList,
+                      ),
+                      currentAccountPicture: CircleAvatar(
+                          child: FlutterLogo(
+                        size: 42,
+                      )),
+                    ),
+                  );
+                }
+
+                if (snapshot.hasError == snapshot.error) {
+                  return Center(child: Text(snapshot.error));
+                }
+              }),
           ListTile(
             onTap: () {
               Navigator.pushReplacement(context, MaterialPageRoute(
