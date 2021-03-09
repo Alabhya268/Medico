@@ -48,46 +48,39 @@ class _AppointmentsState extends State<Appointments> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return Doctor(
-                                          uid: appointments.doctoruid);
-                                    },
-                                  ),
-                                );
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return Doctor(
+                                    uid: appointments.doctoruid,
+                                  );
+                                }));
                               },
-                              child: Row(
-                                children: [
-                                  Container(
-                                    height: 60,
-                                    width: 60,
-                                    child: ClipRRect(
-                                      child: Image.network(
-                                        '${appointments.imageurl}',
-                                        fit: BoxFit.cover,
-                                        filterQuality: FilterQuality.low,
-                                      ),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
+                              child: Container(
+                                height: 60,
+                                width: 60,
+                                child: ClipRRect(
+                                  child: Image.network(
+                                    '${appointments.imageurl}',
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.low,
                                   ),
-                                  SizedBox(
-                                    width: 12,
-                                  ),
-                                  Expanded(
-                                    child: ListTile(
-                                      contentPadding: EdgeInsets.all(0),
-                                      title: Text(
-                                        '${appointments.reason}',
-                                        textDirection: TextDirection.ltr,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      subtitle: Text(
-                                          'time: ${appointments.time}\nData: ${appointments.date}'),
-                                    ),
-                                  ),
-                                ],
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 12,
+                            ),
+                            Expanded(
+                              child: ListTile(
+                                contentPadding: EdgeInsets.all(0),
+                                title: Text(
+                                  '${appointments.reason}',
+                                  textDirection: TextDirection.ltr,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                subtitle: Text(
+                                    'time: ${appointments.time}\nData: ${appointments.date}'),
                               ),
                             ),
                             IconButton(
