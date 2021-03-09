@@ -58,6 +58,7 @@ class _LoginState extends State<Login> {
 
   bool _registerFormLoading = false;
   bool _isPasswordHidden = true;
+  bool _isDoctor = false;
 
   String _registerEmail;
   String _registerPassword;
@@ -81,7 +82,7 @@ class _LoginState extends State<Login> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(hintText: 'Email'),
                           onChanged: (value) {
-                            _registerEmail = value;
+                            _registerEmail = value.toLowerCase();
                           },
                         ),
                         ListTile(
@@ -104,6 +105,20 @@ class _LoginState extends State<Login> {
                                   ? Icon(Icons.lock)
                                   : Icon(Icons.lock_open),
                             )),
+                        ListTile(
+                          contentPadding: EdgeInsets.all(0),
+                          title: Text('I am Doctor'),
+                          leading: GestureDetector(
+                            child: Checkbox(
+                              onChanged: (bool value) {
+                                setState(() {
+                                  _isDoctor = value;
+                                });
+                              },
+                              value: _isDoctor,
+                            ),
+                          ),
+                        ),
                         Divider(
                           height: 24,
                         ),

@@ -110,7 +110,7 @@ class _SignupState extends State<Signup> {
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(hintText: 'Email'),
                           onChanged: (value) {
-                            _registerEmail = value;
+                            _registerEmail = value.toLowerCase();
                           },
                         ),
                         ListTile(

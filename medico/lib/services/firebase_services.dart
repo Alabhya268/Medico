@@ -9,10 +9,11 @@ class FirebaseServices {
     return _firebaseAuth.currentUser.uid;
   }
 
-  UserModel user;
-
   final CollectionReference usersRef =
       FirebaseFirestore.instance.collection("users");
+
+  final CollectionReference doctorRef =
+      FirebaseFirestore.instance.collection("doctors");
 
   Future<String> createAccount({
     String name,

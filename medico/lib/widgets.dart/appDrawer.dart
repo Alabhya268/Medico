@@ -1,19 +1,31 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:medico/models/user_model.dart';
 import 'package:medico/pages/appointments.dart';
 import 'package:medico/pages/home.dart';
 import 'package:medico/pages/profile.dart';
+import 'package:medico/services/firebase_services.dart';
 
 import '../constants.dart';
 
 class AppDrawer extends StatefulWidget {
   @override
   _AppDrawerState createState() => _AppDrawerState();
-}
+} 
 
 class _AppDrawerState extends State<AppDrawer> {
+  FirebaseServices _firebaseServices = FirebaseServices();
+
+  Future<UserModel> getUser() async {
+    return await _firebaseServices.usersRef
+        .doc(_firebaseServices.getUserId())
+        .get()
+        .then((value) => UserModel.fromData(value.data()));
+  }
+
   @override
   Widget build(BuildContext context) {
+    UserModel user;
     final drawerHeader = GestureDetector(
       onTap: () {
         Navigator.pushReplacement(context, MaterialPageRoute(
@@ -24,11 +36,11 @@ class _AppDrawerState extends State<AppDrawer> {
       },
       child: UserAccountsDrawerHeader(
         accountName: Text(
-          'Name',
+          user.name ?? 'Name',
           style: Constants.drawerList,
         ),
         accountEmail: Text(
-          'Email',
+          user.email ??'Email',
           style: Constants.drawerList,
         ),
         currentAccountPicture: CircleAvatar(

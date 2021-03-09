@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 import '../constants.dart';
 
 class BookAppointment extends StatefulWidget {
+  final doctorUid;
+
+  const BookAppointment({Key key, this.doctorUid}) : super(key: key);
   @override
   _BookAppointmentState createState() => _BookAppointmentState();
 }

@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:medico/models/doctor_model.dart';
+import 'package:medico/pages/book_appointment.dart';
+import 'package:medico/services/firebase_services.dart';
 import 'package:medico/widgets.dart/customBtn.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../constants.dart';
 
 class Doctor extends StatefulWidget {
+  final uid;
+
+  const Doctor({Key key, this.uid}) : super(key: key);
   @override
   _DoctorState createState() => _DoctorState();
 }
 
 class _DoctorState extends State<Doctor> {
+  FirebaseServices _firebaseServices = FirebaseServices();
+
+  Future<DoctorModel> getDoctor() async {
+    return await _firebaseServices.doctorRef
+        .doc(widget.uid)
+        .get()
+        .then((value) => DoctorModel.fromData(value.data()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,66 +31,119 @@ class _DoctorState extends State<Doctor> {
           title: Text('Doctor Name', style: Constants.boldAppbarHeading)),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: ListView(
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              height: 250,
-              decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(12)),
-              child: FlutterLogo(
-                size: 300,
-              ),
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.all(0),
-              title: Text(
-                "Name of Doctor",
-                style: Constants.boldDoctorHeading,
-              ),
-              subtitle: Text(
-                'Degree',
-                style: Constants.drawerList,
-              ),
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.all(0),
-              title: Text(
-                'Specialist In:',
-                style: Constants.boldDoctorSubHeading,
-              ),
-              subtitle: Text(
-                'Specialist In feilds',
-                style: Constants.drawerList,
-              ),
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.all(0),
-              title: Text(
-                'Professional Bio:',
-                style: Constants.boldDoctorSubHeading,
-              ),
-              subtitle: Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
-                style: Constants.drawerList,
-              ),
-            ),
-            SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                    child: CustomBtn(
-                  label: 'Consult Online',
-                )),
-                SizedBox(width: 12),
-                Expanded(
-                    child: CustomBtn(
-                  label: 'Book Appointment',
-                ))
-              ],
-            ),
-          ],
-        ),
+        child: FutureBuilder<DoctorModel>(
+            future: getDoctor(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text('${snapshot.error}'),
+                );
+              }
+
+              if (snapshot.connectionState == ConnectionState.done) {
+                DoctorModel doctor = snapshot.data;
+                return ListView(
+                  children: [
+                    Container(
+                      height: 250,
+                      decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(12)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          '${doctor.imgurl}',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(0),
+                      title: Text(
+                        "${doctor.name}",
+                        style: Constants.boldDoctorHeading,
+                      ),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(0),
+                      title: Text(
+                        'Specialist In:',
+                        style: Constants.boldDoctorSubHeading,
+                      ),
+                      subtitle: Text(
+                        '${doctor.specialistof}',
+                        style: Constants.drawerList,
+                      ),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(0),
+                      title: Text(
+                        'Contact no:',
+                        style: Constants.boldDoctorSubHeading,
+                      ),
+                      subtitle: Text(
+                        '${doctor.phone}',
+                        style: Constants.drawerList,
+                      ),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(0),
+                      title: Text(
+                        'Email:',
+                        style: Constants.boldDoctorSubHeading,
+                      ),
+                      subtitle: Text(
+                        '${doctor.email}',
+                        style: Constants.drawerList,
+                      ),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(0),
+                      title: Text(
+                        'Professional Bio:',
+                        style: Constants.boldDoctorSubHeading,
+                      ),
+                      subtitle: Text(
+                        '${doctor.bio}',
+                        style: Constants.drawerList,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: CustomBtn(
+                          label: 'Consult Online',
+                        )),
+                        SizedBox(width: 6),
+                        Expanded(
+                            child: CustomBtn(
+                          label: 'Book Appointment',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) {
+                                  return BookAppointment(
+                                    doctorUid: doctor.uid,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ))
+                      ],
+                    ),
+                  ],
+                );
+              }
+            }),
       ),
     );
   }
