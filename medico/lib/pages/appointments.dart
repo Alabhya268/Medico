@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medico/constants.dart';
 import 'package:medico/models/appointment_model.dart';
+import 'package:medico/pages/doctor.dart';
 import 'package:medico/services/firebase_services.dart';
 import 'package:medico/widgets.dart/appDrawer.dart';
 
@@ -33,79 +34,95 @@ class _AppointmentsState extends State<Appointments> {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
                 return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: ListView(
-                  children: snapshot.data.docs.map((document) {
-                    AppointmentModel appointments =
-                        AppointmentModel.fromData(document.data());
-                    return Container(
-                      padding: EdgeInsets.symmetric(vertical: 6),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            height: 60,
-                            width: 60,
-                            child: ClipRRect(
-                              child: Image.network(
-                                '${appointments.imageurl}',
-                                fit: BoxFit.cover,
-                                filterQuality: FilterQuality.low,
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: ListView(
+                    children: snapshot.data.docs.map((document) {
+                      AppointmentModel appointments =
+                          AppointmentModel.fromData(document.data());
+                      return Container(
+                        padding: EdgeInsets.symmetric(vertical: 6),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return Doctor(
+                                          uid: appointments.doctoruid);
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Container(
+                                    height: 60,
+                                    width: 60,
+                                    child: ClipRRect(
+                                      child: Image.network(
+                                        '${appointments.imageurl}',
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.low,
+                                      ),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 12,
+                                  ),
+                                  Expanded(
+                                    child: ListTile(
+                                      contentPadding: EdgeInsets.all(0),
+                                      title: Text(
+                                        '${appointments.reason}',
+                                        textDirection: TextDirection.ltr,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      subtitle: Text(
+                                          'time: ${appointments.time}\nData: ${appointments.date}'),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              borderRadius: BorderRadius.circular(6),
                             ),
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            child: ListTile(
-                              contentPadding: EdgeInsets.all(0),
-                              title: Text(
-                                '${appointments.reason}',
-                                textDirection: TextDirection.ltr,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              subtitle: Text(
-                                  'time: ${appointments.time}\nData: ${appointments.date}'),
+                            IconButton(
+                              icon: Icon(Icons.remove_circle_outline_outlined),
+                              onPressed: () {
+                                setState(() {
+                                  _firebaseServices.appointmentRef
+                                      .doc('${document.id}')
+                                      .delete();
+                                });
+                              },
+                              color: Colors.black38,
                             ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.remove_circle_outline_outlined),
-                            onPressed: () {
-                              setState(() {
-                                _firebaseServices.appointmentRef
-                                    .doc('${document.id}')
-                                    .delete();
-                              });
-                            },
-                            color: Colors.black38,
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 );
               }
-              
+
               if (!snapshot.hasData) {
-               return Padding(
-                 padding: const EdgeInsets.all(12.0),
-                 child: Center(child: Text('No appointments have been booked yet'),),
-               );
+                return Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Center(
+                    child: Text('No appointments have been booked yet'),
+                  ),
+                );
               }
-              
             }
 
             if (snapshot.hasError) {
               return Center(child: Text(snapshot.error));
             }
           }),
-
-          
     );
   }
 }
