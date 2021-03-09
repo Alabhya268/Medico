@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:pytorch_mobile/enums/dtype.dart';
 import 'package:pytorch_mobile/model.dart';
 import 'package:pytorch_mobile/pytorch_mobile.dart';
@@ -24,10 +22,13 @@ class PredictionCore {
     return labelToDisease[label];
   }
 
-  List encodeLabelSymptom(List symptomList) {
-    List<int> labelList = [];
+  List<double> encodeLabelSymptom(List symptomList) {
+    List<double> labelList = [];
     for (String x in symptomList) {
-      labelList.add(symptomsToLabel[x]);
+      labelList.add(symptomsToLabel[x].toDouble());
+    }
+    while (labelList.length < 17) {
+      labelList.add(0.0);
     }
     return labelList;
   }
@@ -41,10 +42,15 @@ class PredictionCore {
     return prediction;
   }
 
-  Future<void> mainFunc() async {
-    List<double> sample = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 35, 0, 0, 0, 0];
-    List diseaseCodes = await this.computeDisease(sample);
-    var disease = this.decodeLabelDisease(this.max(diseaseCodes));
+  Future<String> computeDiseaseName(List symptomList) async {
+    List _symptoms = this.encodeLabelSymptom(symptomList);
+    List diseaseCodes = await this.computeDisease(_symptoms);
+    String disease = this.decodeLabelDisease(this.max(diseaseCodes));
+    return disease;
+  }
+
+  Future<void> testFunc() async {
+    String disease = await this.computeDiseaseName(['Acidity']);
     print('The disease with the maximum probability is $disease');
   }
 }
