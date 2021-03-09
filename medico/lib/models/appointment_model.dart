@@ -1,13 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-class Appointment {
+class AppointmentModel {
+  String imageurl;
   String uid;
   String doctoruid;
   String reason;
   String time;
   String date;
 
-  Appointment({
+  AppointmentModel({
+    this.imageurl,
     this.uid,
     this.doctoruid,
     this.reason,
@@ -15,8 +15,9 @@ class Appointment {
     this.date,
   });
 
-  Appointment.fromData(Map<String, dynamic> data)
-      : uid = data['uid'],
+  AppointmentModel.fromData(Map<String, dynamic> data)
+      : imageurl = data['imageurl'],
+        uid = data['uid'],
         doctoruid = data['doctoruid'],
         reason = data['reason'],
         time = data['time'],
@@ -24,6 +25,7 @@ class Appointment {
 
   Map<String, dynamic> toJson() {
     return {
+      'imageurl': imageurl,
       'uid': uid,
       'doctoruid': doctoruid,
       'reason': reason,

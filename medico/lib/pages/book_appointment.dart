@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:medico/models/appointment.dart';
+import 'package:medico/models/appointment_model.dart';
 import 'package:medico/services/firebase_services.dart';
 import 'package:medico/widgets.dart/customBtn.dart';
 import 'package:intl/intl.dart';
@@ -10,8 +10,10 @@ import '../constants.dart';
 
 class BookAppointment extends StatefulWidget {
   final doctorUid;
+  final imageurl;
 
-  const BookAppointment({Key key, this.doctorUid}) : super(key: key);
+  const BookAppointment({Key key, this.doctorUid, this.imageurl})
+      : super(key: key);
   @override
   _BookAppointmentState createState() => _BookAppointmentState();
 }
@@ -21,8 +23,9 @@ class _BookAppointmentState extends State<BookAppointment> {
 
   String _fromDate;
   String _fromTime;
+  bool _isloading = false;
 
-  Appointment _appointment;
+  AppointmentModel _appointment;
 
   String reason;
 
@@ -42,7 +45,8 @@ class _BookAppointmentState extends State<BookAppointment> {
   }
 
   Future _bookAppointment() {
-    _appointment = Appointment(
+    _appointment = AppointmentModel(
+      imageurl: widget.imageurl,
       uid: _firebaseServices.getUserId(),
       doctoruid: widget.doctorUid,
       reason: reason,
@@ -69,123 +73,132 @@ class _BookAppointmentState extends State<BookAppointment> {
           title: Text('Book Appointment', style: Constants.boldAppbarHeading)),
       body: Padding(
         padding: EdgeInsets.all(12),
-        child: ListView(
-          children: [
-            Column(
-              children: [
-                GridView.count(
-                  shrinkWrap: true,
-                  crossAxisCount: 2,
-                  childAspectRatio: 5 / 2,
-                  children: [
-                    for (int i = 0; i < 6; i++)
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _fromTime =
-                                '${_initialTime + i * 2 - 2}:00 - ${_initialTime + i * 2}:00';
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 6, horizontal: 6),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.greenAccent,
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Center(
-                                child: Text(
-                                    '${_initialTime + i * 2 - 2}:00 - ${_initialTime + i * 2}:00')),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                SizedBox(
-                  height: 24,
-                ),
-                Center(
-                    child: Text(
-                  'Selected time: $_fromTime '?? 'Select Time',
-                  style: Constants.boldDoctorSubHeading,
-                )),
-              ],
-            ),
-            SizedBox(
-              height: 72,
-            ),
-            Column(
-              children: [
-                Center(
-                    child: Text(
-                  'Selected date: $_fromDate' ?? 'Select Date',
-                  style: Constants.boldDoctorSubHeading,
-                )),
-                SizedBox(
-                  height: 24,
-                ),
-                CustomBtn(
-                  label: 'Pick the date',
-                  onTap: () {
-                    _showDatePicker(context);
-                  },
-                )
-              ],
-            ),
-            SizedBox(
-              height: 48,
-            ),
-            TextFormField(
-              textInputAction: TextInputAction.done,
-              autofocus: false,
-                  decoration:
-                      InputDecoration(hintText: 'Reason for appointment ...'),
-                  onChanged: (value) {
-                    reason = value;
-                  },
-                ),
-                SizedBox(height: 48),
-            CustomBtn(
-              label: 'Book Appointment',
-              onTap: () {
-                validateFields()
-                    ? _bookAppointment().then(
-                        (value) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Appointment booked sucessfully'),
-                              duration: Duration(seconds: 2),
-                              action: SnackBarAction(
-                                label: 'Dismiss',
-                                textColor: Colors.blue,
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
-                                },
+        child: _isloading
+            ? Center(child: CircularProgressIndicator())
+            : ListView(
+                children: [
+                  Column(
+                    children: [
+                      GridView.count(
+                        shrinkWrap: true,
+                        crossAxisCount: 2,
+                        childAspectRatio: 5 / 2,
+                        children: [
+                          for (int i = 0; i < 6; i++)
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _fromTime =
+                                      '${_initialTime + i * 2 - 2}:00 - ${_initialTime + i * 2}:00';
+                                });
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 6),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.greenAccent,
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Center(
+                                      child: Text(
+                                          '${_initialTime + i * 2 - 2}:00 - ${_initialTime + i * 2}:00')),
+                                ),
                               ),
                             ),
-                          );
-                          Navigator.pop(context);
+                        ],
+                      ),
+                      SizedBox(
+                        height: 24,
+                      ),
+                      Center(
+                          child: Text(
+                        'Selected time: $_fromTime ' ?? 'Select Time',
+                        style: Constants.boldDoctorSubHeading,
+                      )),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 72,
+                  ),
+                  Column(
+                    children: [
+                      Center(
+                          child: Text(
+                        'Selected date: $_fromDate' ?? 'Select Date',
+                        style: Constants.boldDoctorSubHeading,
+                      )),
+                      SizedBox(
+                        height: 24,
+                      ),
+                      CustomBtn(
+                        label: 'Pick the date',
+                        onTap: () {
+                          _showDatePicker(context);
                         },
                       )
-                    : ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('All fields are necessary'),
-                          duration: Duration(seconds: 2),
-                          action: SnackBarAction(
-                            label: 'Dismiss',
-                            textColor: Colors.blue,
-                            onPressed: () {
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                            },
-                          ),
-                        ),
-                      );
-              },
-            )
-          ],
-        ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 48,
+                  ),
+                  TextFormField(
+                    textInputAction: TextInputAction.done,
+                    autofocus: false,
+                    decoration:
+                        InputDecoration(hintText: 'Reason for appointment ...'),
+                    onChanged: (value) {
+                      reason = value;
+                    },
+                  ),
+                  SizedBox(height: 48),
+                  CustomBtn(
+                    label: 'Book Appointment',
+                    onTap: () {
+                      setState(() {
+                        _isloading = true;
+                      });
+                      validateFields()
+                          ? _bookAppointment().then(
+                              (value) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        Text('Appointment booked sucessfully'),
+                                    duration: Duration(seconds: 2),
+                                    action: SnackBarAction(
+                                      label: 'Dismiss',
+                                      textColor: Colors.blue,
+                                      onPressed: () {
+                                        ScaffoldMessenger.of(context)
+                                            .hideCurrentSnackBar();
+                                      },
+                                    ),
+                                  ),
+                                );
+                                setState(() {
+                                  _isloading = false;
+                                });
+                                Navigator.pop(context);
+                              },
+                            )
+                          : ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('All fields are necessary'),
+                                duration: Duration(seconds: 2),
+                                action: SnackBarAction(
+                                  label: 'Dismiss',
+                                  textColor: Colors.blue,
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                  },
+                                ),
+                              ),
+                            );
+                    },
+                  )
+                ],
+              ),
       ),
     );
   }

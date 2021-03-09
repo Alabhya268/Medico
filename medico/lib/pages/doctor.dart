@@ -3,7 +3,6 @@ import 'package:medico/models/doctor_model.dart';
 import 'package:medico/pages/book_appointment.dart';
 import 'package:medico/services/firebase_services.dart';
 import 'package:medico/widgets.dart/customBtn.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../constants.dart';
 
 class Doctor extends StatefulWidget {
@@ -132,6 +131,7 @@ class _DoctorState extends State<Doctor> {
                                 builder: (BuildContext context) {
                                   return BookAppointment(
                                     doctorUid: doctor.uid,
+                                    imageurl: doctor.imgurl,
                                   );
                                 },
                               ),
